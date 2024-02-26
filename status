@@ -1,0 +1,57 @@
+Name:	notprocesstree
+Umask:	0022
+State:	R (running)
+Tgid:	78752
+Ngid:	0
+Pid:	78752
+PPid:	78743
+TracerPid:	78743
+Uid:	1000	1000	1000	1000
+Gid:	1000	1000	1000	1000
+FDSize:	64
+Groups:	4 20 24 25 27 29 30 44 46 116 1000 
+NStgid:	78752
+NSpid:	78752
+NSpgid:	78752
+NSsid:	78752
+VmPeak:	    2688 kB
+VmSize:	    2648 kB
+VmLck:	       0 kB
+VmPin:	       0 kB
+VmHWM:	    1124 kB
+VmRSS:	    1124 kB
+RssAnon:	      96 kB
+RssFile:	    1028 kB
+RssShmem:	       0 kB
+VmData:	      92 kB
+VmStk:	     136 kB
+VmExe:	       4 kB
+VmLib:	    1796 kB
+VmPTE:	      32 kB
+VmSwap:	       0 kB
+HugetlbPages:	       0 kB
+CoreDumping:	0
+THP_enabled:	1
+Threads:	1
+SigQ:	1/15657
+SigPnd:	0000000000000000
+ShdPnd:	0000000000000000
+SigBlk:	0000000000000000
+SigIgn:	0000000000000000
+SigCgt:	0000000000000000
+CapInh:	0000000000000000
+CapPrm:	0000000000000000
+CapEff:	0000000000000000
+CapBnd:	000001ffffffffff
+CapAmb:	0000000000000000
+NoNewPrivs:	0
+Seccomp:	0
+Seccomp_filters:	0
+Speculation_Store_Bypass:	thread vulnerable
+SpeculationIndirectBranch:	conditional enabled
+Cpus_allowed:	f
+Cpus_allowed_list:	0-3
+Mems_allowed:	1
+Mems_allowed_list:	0
+voluntary_ctxt_switches:	7
+nonvoluntary_ctxt_switches:	44
