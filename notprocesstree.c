@@ -5,6 +5,8 @@
 #include <sys/stat.h>
 
 void main(){
+    
+
     int a =fork();
     int b =fork();
     int c =fork();
@@ -20,10 +22,11 @@ void main(){
     if(a>0 && b==0 && c==0){
         sleep(5);
         exit(1);
+        
     }
 
+    sleep(5000);
+    // while(1){
 
-    while(1){
-
-    }
+    // }
 }
