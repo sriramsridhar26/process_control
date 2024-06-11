@@ -1,13 +1,21 @@
+/*
+  @author: Sriram Sridhar
+  @StudentId: 110126034
+  filename: a2prc_sriram_sridhar_110126034.c
+*/
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <string.h>
 #include <sys/stat.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <ctype.h>
 #include <signal.h>
+
 
 struct status
 {
@@ -18,6 +26,7 @@ struct status
     int *children;
     int childsize;
 };
+int dcount = 0;
 int fs_procid = 0;
 
 // Return bytesize if file exist
@@ -126,17 +135,17 @@ struct status *parseStat(char *procid)
         if (isdigit(token[0]))
         {
             // If its a number and if its first, then its the pid, second is ppid and third is pgid
-            if (count == 0)
+            if (*count == 0)
             {
                 ptr->pid = atoi(token);
                 *count+=1;
             }
-            else if (count == 1)
+            else if (*count == 1)
             {
                 ptr->ppid = atoi(token);
                 *count+=1;
             }
-            else if (count == 2)
+            else if (*count == 2)
             {
                 ptr->pgid = atoi(token);
                 *count+=1;
@@ -151,6 +160,10 @@ struct status *parseStat(char *procid)
             if (strcmp(token, "R") == 0)
             {
                 ptr->state = 1;
+            }
+            else if (strcmp(token, "T") == 0)
+            {
+                ptr->state = 4;
             }
             else if (strcmp(token, "Z") == 0)
             {
@@ -236,7 +249,7 @@ int procLevelOp(struct status *proc, struct status *rootproc, int type)
     // the process does not exist in hierarchy, display appropriate message and exit
     if ((proc->pgid != rootproc->pgid) && (proc->pgid != proc->pid))
     {
-        printf("\nProcess does not exist in hierarchy or error\n");
+        printf("\nProcess not found in hierarchy\n");
         return 0;
     }
 
@@ -251,7 +264,7 @@ int procLevelOp(struct status *proc, struct status *rootproc, int type)
         // Kill the process using SIGKILL if option -rp was given by user
         if (kill(proc->pid, SIGKILL) < 0)
         {
-            printf("\nKilling process failed\n");
+            printf("\nSIGKILL failed killing process\n");
             return 0;
         }
         printf("\nProcess killed successfully\n");
@@ -262,7 +275,7 @@ int procLevelOp(struct status *proc, struct status *rootproc, int type)
         // Kill the root/parent process if option -pr was given by user
         if (kill(rootproc->pid, SIGKILL) < 0)
         {
-            printf("\nKilling root process failed\n");
+            printf("\nSIGKILL failed killing root process\n");
             return 0;
         }
         printf("\nRoot process killed successfully\n");
@@ -273,7 +286,7 @@ int procLevelOp(struct status *proc, struct status *rootproc, int type)
         // STOP/Pause the process if option -xt was given by user
         if (kill(proc->pid, SIGSTOP) < 0)
         {
-            printf("\nSuspending process failed\n");
+            printf("\nSIGTOP failed suspending the process\n");
             return 0;
         }
         printf("\nProcess suspended successfully\n");
@@ -300,10 +313,15 @@ int procLevelOp(struct status *proc, struct status *rootproc, int type)
         }
         else if (proc->state == 3)
         {
-            printf("\nProcess is sleeping\n");
+            printf("\nProcess is sleeping\nNot defunct\n");
             return 1;
         }
-        printf("\nProcess is still running");
+        else if (proc->state == 4)
+        {
+            printf("\nProcess is paused\nNot defunct\n");
+            return 1;
+        }
+        printf("\nProcess is still running\nNot defunct\n");
     }
 }
 
@@ -315,7 +333,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
     // the process does not exist in hierarchy, display appropriate message and exit
     if ((proc->pgid != rootproc->pgid) && (proc->pgid != proc->pid))
     {
-        printf("\nProcess does not exist in hierarchy or error\n");
+        printf("\nProcess not found in hierarchy\n");
         return 0;
     }
     // List non-direct descendants or defunct descendants if option -xn or -xz is supplied
@@ -346,12 +364,14 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
             {
                 printf("%d ", childst->pid);
                 fflush(stdout);
+                dcount++;
             }
             // If the option is -xz and child state is defunct then print it
             if (type == 4 && (childst->state == 2))
             {
                 printf("%d ", childst->pid);
                 fflush(stdout);
+                dcount++;
             }
 
             // Send child proc and current pid proc into a recursive function
@@ -369,8 +389,8 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
         // If there's no children then exit
         if (proc->childsize == 0)
         {
-            printf("\nNo children in this process\n");
-            return 0;
+            printf("\nNo direct descendants \n");
+            return 1;
         }
         for (int i = 0; i < proc->childsize; i++)
         {
@@ -396,7 +416,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
             
             // Check number of children and traverse in a loop 
             if(ptproc->childsize ==1){
-                printf("\nProcess does not have siblings\n");
+                printf("\nProcess does not have any siblings\n");
                 return 1;
             }
             for (int i = 0; i < ptproc->childsize; i++)
@@ -414,7 +434,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
         else{
             // If rootproc is sme ppid's proc then continue or exit
             if(rootproc->childsize ==1){
-                printf("\nProcess does not have siblings\n");
+                printf("\nProcess does not have any siblings\n");
                 return 1;
             }
             // Traverse through the list and ignore the pid which we gave
@@ -434,7 +454,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
     }
     else if (type == 5)
     {
-        // Get childsize and if it's 0 then it might e file currption 
+        // Get childsize and if it's 0 then exit 
         if (proc->childsize == 0)
         {
             return 0;
@@ -460,6 +480,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
             for (int j = 0; j < childst->childsize; j++)
             {
                 printf("%d ", *(childst->children + j));
+                dcount++;
             }
             free(childst);
         }
@@ -471,6 +492,7 @@ int listprocessop(struct status *proc, struct status *rootproc, int type)
 void main(int argc, char *argv[])
 {
     int stat = 0;
+    // Debug code
     // struct status *procid_stat = parseStat(argv[1]);
     // printf("\nproc id: %d\n", procid_stat->pid);
     // printf("\npproc id: %d\n", procid_stat->ppid);
@@ -517,6 +539,7 @@ void main(int argc, char *argv[])
         {
             fs_procid = atoi(argv[1]);
             stat = listprocessop(proc, rootproc, 1);
+            (dcount==0) && printf("\nNo non-direct descendants\n");
             printf("\n");
         }
         else if (strcmp(argv[3], "-xd") == 0)
@@ -530,11 +553,12 @@ void main(int argc, char *argv[])
         else if (strcmp(argv[3], "-xz") == 0)
         {
             stat = listprocessop(proc, rootproc, 4);
-            printf("\n");
+            (dcount==0) && printf("\nNo descendant zombie process/es\n");
         }
         else if (strcmp(argv[3], "-xg") == 0)
         {
             stat = listprocessop(proc, rootproc, 5);
+            (dcount==0) && printf("\nNo grandchildren\n");
             printf("\n");
         }
     }

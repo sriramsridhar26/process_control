@@ -1,0 +1,127 @@
+// DEPRECATED
+// struct status *parseStatus(char *filename)
+// {
+//     struct status *ptr = malloc(sizeof(struct status));
+//     int fd = open(filename, O_RDONLY);
+//     // printf("\nfd stat: %d\n", fd);
+//     char *buff=malloc(64*sizeof(char));
+//     int d = read(fd, buff, 50);
+//     int count = 0;
+//     char *token = strtok(buff, " ");
+//     while (token != NULL)
+//     {
+//         if (isdigit(token[0]))
+//         {
+//             if (count == 0)
+//             {
+//                 ptr->pid = atoi(token);
+//                 count++;
+//             }
+//             else if (count == 1)
+//             {
+//                 ptr->ppid = atoi(token);
+//                 count++;
+//             }
+//             else if (count == 2)
+//             {
+//                 ptr->pgid = atoi(token);
+//                 count++;
+//             }
+//         }
+//         if (isalpha(token[0]))
+//         {
+//             if (strcmp(token, "R") == 0)
+//             {
+//                 ptr->state = 1;
+//             }
+//             if (strcmp(token, "Z") == 0)
+//             {
+//                 ptr->state = 2;
+//             }
+//         }
+//         token = strtok(NULL, " ");
+//     }
+//     // printf("\n%s\n",buff);
+//     // printf("\ncount: %d\n", count);
+//     return ptr;
+//     // free(buff);
+// }
+
+
+
+
+
+
+// DEPRECATED
+// struct status *statRetrieve(char *procid)
+// {
+//     char *procpath = malloc((6 + strlen(procid)) * sizeof(char));
+//     strcpy(procpath, "/proc/");
+//     strcat(procpath, procid);
+//     if (!checkdirexists(procpath))
+//     {
+//         printf("\nProcess process does not exist\n");
+//         return 0;
+//     }
+//     int rlcstat = realloc(procpath, ((11 + strlen(procid)) * sizeof(char)));
+//     strcat(procpath, "/stat");
+//     struct status *procid_stat = parseStatus(procpath);
+//     return procid_stat;
+// }
+
+
+
+
+// DEPRECATED
+//  int checkprocesstree(char *procid, char *rootprocid)
+//  {
+//      char *rootpath = malloc((6 + strlen(rootprocid)) * sizeof(char));
+//      char *procpath = malloc((6 + strlen(procid)) * sizeof(char));
+//      strcpy(procpath, "/proc/");
+//      strcpy(rootpath, "/proc/");
+//      strcat(rootpath, rootprocid);
+//      strcat(procpath, procid);
+//      if (!checkdirexists(rootpath))
+//      {
+//          printf("\nRoot process does not exist\n");
+//          return 0;
+//      }
+//      if (!checkdirexists(procpath))
+//      {
+//          printf("\nProcess process does not exist\n");
+//          return 0;
+//      }
+//      int rlcstat = realloc(procpath, ((11 + strlen(procid)) * sizeof(char)));
+//      strcat(procpath, "/stat");
+//      // printf("\n%s\n", procpath);
+//      // fflush(stdout);
+//      struct status *procid_stat = parseStatus(procpath);
+//      // printf("\nproc id: %d\n", procid_stat->pid);
+//      // printf("\npproc id: %d\n", procid_stat->ppid);
+//      // printf("\nroot id: %d\n", procid_stat->pgid);
+//      // printf("\nstat: %d\n", procid_stat->state);
+//      if (procid_stat->pgid == atoi(rootprocid))
+//      {
+//          return 1;
+//      }
+//      free(procpath);
+//      free(rootpath);
+//      free(procid_stat);
+//      return 0;
+//  }
+
+
+
+
+
+
+    // strcpy(statpath, "/proc/");
+    // strcat(statpath, procid);
+
+    
+    // strcpy(childpath, statpath);
+    // strcat(childpath, "/task/");
+    // strcat(childpath, procid);
+    // strcat(childpath, "/children");
+    // int rlcstat = realloc(statpath, ((11 + strlen(procid)) * sizeof(char)));
+    // strcat(statpath, "/stat");

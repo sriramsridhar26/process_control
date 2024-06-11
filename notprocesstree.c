@@ -2,11 +2,18 @@
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
+#include <signal.h>
 #include <sys/stat.h>
+
+void alrmhandler(){
+    kill(getpid(),SIGKILL);
+
+}
 
 void main(){
     
-
+    signal(SIGALRM,alrmhandler);
+    printf("\npid %d ppid %d",getpid(),getppid());
     int a =fork();
     int b =fork();
     int c =fork();
@@ -24,9 +31,11 @@ void main(){
         exit(1);
         
     }
+    alarm(1000);
+    while(1){
 
-    sleep(5000);
-    // while(1){
-
-    // }
+    }
+    
 }
+ 
+
